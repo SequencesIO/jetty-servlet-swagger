@@ -1,0 +1,41 @@
+apply plugin: "java"
+apply plugin: "eclipse"
+
+def sampleVersion = "1.0.0"
+
+group("io.sequences")
+version("$sampleVersion")
+
+repositories {
+
+    mavenCentral()
+}
+
+dependencies {
+
+    compile "io.swagger:swagger-servlet:1.5.17"
+    compile "org.eclipse.jetty:jetty-servlet:9.4.8.v20171121"
+    compile "org.eclipse.jetty:jetty-server:9.4.8.v20171121"
+}
+
+jar {
+
+    manifest {
+        
+        attributes("Main-Class": "io.sequences.samples.EmbeddedServer")
+        attributes("Implementation-Title": "EmbeddedServer", group)
+        attributes("Implementation-Vendor": "SequencesIO", group)
+        attributes("Implementation-Version": sampleVersion, group)
+    }
+}
+
+task copyJars(type: Copy, dependsOn: "jar") {
+
+    from configurations.runtime
+    from tasks["jar"].outputs
+    into "$buildDir/jars"
+}
+
+tasks["build"].dependsOn.add(copyJars)
+
+defaultTasks "build"
